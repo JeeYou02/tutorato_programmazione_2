@@ -14,47 +14,6 @@ class BST{
         return n;
     }
 
-    bool del(Node* n){
-        if(!n->left && !n->right){   //foglia
-            if(n == n->parent->left)
-                n->parent->left = n->right;
-            else
-                n->parent->right = NULL;
-            
-            delete n;
-            return true;
-        }
-
-        else if(!n->left || !n->right){   //un figlio
-            if(n == n->parent->left){     //è figlio sinistro
-                if(n->left){             //ha figlio sinistro
-                    n->parent->left = n->left;
-                    n->left->parent = n->parent;
-                    delete n;
-                    return true;
-                } else {
-                    n->parent->left = n->right;
-                    n->right->parent = n->parent;
-                    delete n;
-                    return true;
-                }
-            } else {                        //è figlio destro
-                if(n->left){
-                    n->parent->right = n->left;
-                    n->left->parent = n->parent;
-                    delete n;
-                    return true;
-                } else{
-                    n->parent->right = n->right;
-                    n->right->parent = n->parent;
-                    delete n;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public:
     BST(Node* _root = NULL): root(_root){}
     ~BST() { destroy(root); }
@@ -93,7 +52,7 @@ class BST{
         new_node->parent = prec;
     }
 
-    Studente* search(int matricola){
+    Node* search(int matricola){
         if(root == NULL) return NULL;
 
         Node* curr = root;
@@ -104,29 +63,55 @@ class BST{
                 curr = curr->left;
         }
 
-        return (curr == NULL)? NULL : curr->val;
+        //return (curr == NULL)? NULL : curr->val;
+        return curr;
     }
 
-    void deleteNode(int matricola){
-        if(root == NULL) return;
-
-        Node* curr = root;
-        while(curr && (curr->val->getMatricola() != matricola)){
-            if(matricola > curr->val->getMatricola())
-                curr = curr->right;
+    void deleteNode(Node* n){
+        /*if(!n->left && !n->right){    //il nodo è una foglia
+            if(n->isLeftChild())
+                n->parent->left = NULL;
             else
-                curr = curr->left;
+                n->parent->right = NULL;
+            
+            delete n;
+            return;
+        }*/
+
+        if(!n->left){     //il nodo non ha il figlio sinistro (foglia o solo figlio destro)
+            if(!n->parent)
+                root = n->right;
+            else if(n->isLeftChild())
+                n->parent->left = n->right;
+            else
+                n->parent->right = n->right;
+            
+            if(n->right)
+                n->right->parent = n->parent;
+
+            delete n;
+            return;
         }
-        if(!curr) return;
 
-        if(del(curr)) return;
-        
-        Node* succ = minimo(curr->right);
-        Studente* aux = curr->val;
-        curr->val = succ->val;
-        succ->val = aux;
+        else if(!n->right){     //il nodo ha un solo figlio (sinistro)
+            if(!n->parent)
+                root = n->left;
+            else if(n->isLeftChild())
+                n->parent->left = n->left;
+            else
+                n->parent->right = n->left;
+            
+            n->left->parent = n->parent;
 
-        del(succ);
+            delete n;
+            return;
+        }
+
+        else{
+            Node* succ = minimo(n->right);      //minimo del sottoalbero destro
+            n->val = succ->val;
+            deleteNode(succ);
+        }
     }
 
     void inOrder(ostream& os, Node* n){

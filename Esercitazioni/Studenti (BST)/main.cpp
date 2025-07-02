@@ -28,13 +28,17 @@ int main(){
         delete s;
     }
 
-    s = b.search(1004);
-    cout << *s << endl;
+    //s = b.search(1004);
+    //cout << *s << endl;
 
-    cout << b;
+    Node* n = b.search(1004);
+    cout << *(n->getVal()) << endl;
 
-    b.deleteNode(1003);
-    b.deleteNode(1005);
+    cout << b << endl;
+
+    b.deleteNode(b.search(1002));
+    b.deleteNode(b.search(1003));
+    b.deleteNode(b.search(1006));
 
     cout << b;
 

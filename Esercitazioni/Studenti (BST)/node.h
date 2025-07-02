@@ -25,6 +25,9 @@ class Node{
     void setLeft(Node* _left) { left = _left; }
     void setRight(Node* _right) { right = _right; }
 
+    bool isLeftChild() { return this == this->parent->left; }
+    bool isRightChild() { return this == this->parent->right; }
+
     friend class BST;
 };
 
